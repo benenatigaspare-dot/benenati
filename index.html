@@ -666,8 +666,8 @@ function openForm(cid){
   h+='</div></div>';
   h+='<div class="fl s2"><label>Descrizione</label><textarea class="inp" id="ffde" rows="3" placeholder="Petitum, causa petendi...">'+e(fd.descrizione||'')+'</textarea></div>';
   h+='<div class="fl s2"><label>Cartella Google Drive</label><input class="inp" id="ffdr" value="'+e(fd.driveLink||'')+'" placeholder="Incolla il link della cartella Drive..."></div>';
-  h+='</div><div style="display:flex;gap:8px;margin-top:22px;max-width:660px;padding-bottom:40px"><button class="btn" onclick="cancelForm(fd.id,isEdit)">Annulla</button><button class="btn btn-dk" onclick="saveForm(fd.id,isEdit)">'+(isEdit?'Salva modifiche':'Crea fascicolo')+'</button></div>';
-  window._fd=fd;
+  h+='</div><div style="display:flex;gap:8px;margin-top:22px;max-width:660px;padding-bottom:40px"><button class="btn" onclick="cancelForm(window._fd.id,window._isEdit)">Annulla</button><button class="btn btn-dk" onclick="saveForm(window._fd.id,window._isEdit)">'+(isEdit?'Salva modifiche':'Crea fascicolo')+'</button></div>';
+  window._fd=fd;window._isEdit=isEdit;
   if(mob()){
     document.getElementById('mformtitle').textContent=isEdit?'Modifica fascicolo':'Nuovo fascicolo';
     document.getElementById('mformbk').onclick=function(){mgo(isEdit?'mdet':'ml')};
