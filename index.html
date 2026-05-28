@@ -462,7 +462,7 @@ function buildDetEl(c,isMob){
     wrap.innerHTML='<div style="font-size:44px;opacity:.1">&#128193;</div><p style="font-family:Cormorant Garamond,serif;font-size:20px;color:var(--ink3)">Seleziona un fascicolo</p><button class="btn btn-dk" onclick="openForm(null)">+ Nuovo fascicolo</button>';
     return wrap;
   }
-  wrap.className=isMob?'mct':'scroll';if(isMob)wrap.style.paddingBottom='100px';
+  wrap.className=isMob?'':'scroll';if(isMob)wrap.style.paddingBottom='100px';
   var st=STATI[c.stato]||STATI.attivo,nh=nu(c),d2=nh?dt(nh.data):null;
   var h='';
   h+='<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px"><div style="flex:1;min-width:0">';
@@ -501,7 +501,7 @@ function openMDet(c){
   if(mob()){
     document.getElementById('mdetnm').textContent=c.cliente||'Fascicolo';
     document.getElementById('mdetsb').textContent=c.tipo;
-    var b=document.getElementById('mdetb');b.innerHTML='';b.appendChild(buildDetEl(c,true));
+    var b=document.getElementById('mdetb');b.innerHTML='';b.appendChild(buildDetEl(c,true));b.scrollTop=0;
     mgo('mdet');
   } else {
     dv('f');renderDet();
@@ -516,7 +516,7 @@ function showTab(t,cid){
 }
 function refDet(cid,tab){
   var c=cases.find(function(x){return x.id===cid});if(!c)return;
-  if(mob()){var b=document.getElementById('mdetb');if(b){b.innerHTML='';b.appendChild(buildDetEl(c,true))}}
+  if(mob()){var b=document.getElementById('mdetb');if(b){b.innerHTML='';b.appendChild(buildDetEl(c,true));b.scrollTop=0;}}
   else{var tn=document.getElementById('tbn'),tu=document.getElementById('tbu'),tp=document.getElementById('tbp');if(tn)tn.innerHTML='Note ('+c.note.length+')';if(tu)tu.innerHTML='Udienze ('+c.udienze.length+')';if(tp)tp.innerHTML='Pagamenti ('+(c.pagamenti||[]).length+')';showTab(tab||ctab,cid)}
 }
 function bNotes(c){
@@ -626,7 +626,7 @@ function buildPagEl(){
 }
 function renderPag(){
   if(desk==='p'&&!mob()){var mc=document.getElementById('mc');if(mc){mc.innerHTML='';mc.appendChild(buildPagEl())}}
-  if(mob()){var el=document.getElementById('mpagb');if(el){el.innerHTML='';el.appendChild(buildPagEl())}}
+  if(mob()){var el=document.getElementById('mpagb');if(el){var pe=buildPagEl();el.innerHTML=pe.innerHTML}}
 }
 
 function buildCal(){
