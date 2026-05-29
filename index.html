@@ -408,6 +408,10 @@ function renderDetInto(c,container,activeTab){
   if(c){
     attachDetListeners(container,c.id);
     renderTab(container,activeTab,c.id);
+  } else {
+    // Wire the empty-state "nuovo fascicolo" button
+    var btn=container.querySelector('#btn-new-empty');
+    if(btn)btn.addEventListener('click',function(){openForm(null)});
   }
 }
 
