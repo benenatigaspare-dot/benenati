@@ -649,30 +649,35 @@ function calClick(d){calSel=calSel===d?null:d;renderCal()}
 function openForm(cid){
   var isEdit=!!cid,c=cid?cases.find(function(x){return x.id===cid}):null,fd=c?JSON.parse(JSON.stringify(c)):EC();
   window._fd=fd;window._isEdit=isEdit;
-  var h='<h1 class="ptitle" style="margin-bottom:22px">'+(isEdit?'Modifica fascicolo':'Nuovo fascicolo')+'</h1><div class="g2" style="max-width:660px">';
+  var h='<div class="modal-title">'+(isEdit?'Modifica fascicolo':'Nuovo fascicolo')+'</div>';
+  h+='<div class="g2">';
   h+='<div class="fld"><label>Tipo</label><select class="inp" id="ff-t">'+TIPI.map(function(t){return '<option'+(fd.tipo===t?' selected':'')+'>'+ec(t)+'</option>'}).join('')+'</select></div>';
-  h+='<div class="fld"><label>Stato</label><select class="inp" id="ff-s">'+Object.entries(STATI).map(function(e){return '<option value="'+e[0]+'"'+(fd.stato===e[0]?' selected':'')+'>'+e[1].l+'</option>'}).join('')+'</select></div>';
+  h+='<div class="fld"><label>Stato</label><select class="inp" id="ff-s">'+Object.entries(STATI).map(function(e2){return '<option value="'+e2[0]+'"'+(fd.stato===e2[0]?' selected':'')+'>'+e2[1].l+'</option>'}).join('')+'</select></div>';
   h+='<div class="fld"><label>Cliente *</label><input class="inp" id="ff-cl" value="'+ec(fd.cliente||'')+'" placeholder="Nome del cliente"></div>';
   h+='<div class="fld"><label>Controparte</label><input class="inp" id="ff-co" value="'+ec(fd.controparte||'')+'" placeholder="Controparte"></div>';
   h+='<div class="fld"><label>Tribunale</label><input class="inp" id="ff-tr" value="'+ec(fd.tribunale||'')+'" placeholder="es. Tribunale di Palermo"></div>';
   h+='<div class="fld"><label>Giudice</label><input class="inp" id="ff-gi" value="'+ec(fd.giudice||'')+'" placeholder="Nome del giudice"></div>';
-  h+='<div class="fld s2"><label>Fase</label><select class="inp" id="ff-fa"><option value="">-- Nessuna --</option>'+FASI.map(function(f){return '<option value="'+f+'"'+(fd.fase===f?' selected':'')+'>'+f+'</option>'}).join('')+'</select></div>';
+  h+='<div class="fld s2"><label>Fase</label><select class="inp" id="ff-fa"><option value="">-- Nessuna --</option>'+FASI.map(function(fase){return '<option value="'+fase+'"'+(fd.fase===fase?' selected':'')+'>'+fase+'</option>'}).join('')+'</select></div>';
   h+='<div class="fld s2" style="background:var(--dim);border-radius:6px;padding:14px"><span class="slbl">Riferimenti processuali</span><div class="g3">';
   NUMERI.forEach(function(n){h+='<div class="fld"><label>'+n.l+'</label><input class="inp" id="ff-'+n.k+'" value="'+ec(fd[n.k]||'')+'" placeholder="1234/2024"></div><div class="fld"><label>'+n.sl+'</label><input class="inp" id="ff-'+n.sk+'" value="'+ec(fd[n.sk]||'')+'" placeholder="Sezione"></div>'});
-  h+='</div></div><div class="fld s2"><label>Descrizione</label><textarea class="inp" id="ff-de" rows="3" placeholder="Petitum, causa petendi...">'+ec(fd.descrizione||'')+'</textarea></div>';
+  h+='</div></div>';
+  h+='<div class="fld s2"><label>Descrizione</label><textarea class="inp" id="ff-de" rows="3" placeholder="Petitum, causa petendi...">'+ec(fd.descrizione||'')+'</textarea></div>';
   h+='<div class="fld s2"><label>Google Drive</label><input class="inp" id="ff-dr" value="'+ec(fd.driveLink||'')+'" placeholder="Link cartella Drive..."></div>';
-  h+='</div><div style="display:flex;gap:8px;margin-top:22px;max-width:660px;padding-bottom:40px"><button class="btn" id="form-cancel">Annulla</button><button class="btn btn-d" id="form-save">'+(isEdit?'Salva modifiche':'Crea fascicolo')+'</button></div>';
-  var container=null;
-  if(mob()){document.getElementById('mformtitle').textContent=isEdit?'Modifica':'Nuovo fascicolo';document.getElementById('mformbk').onclick=function(){showPage(isEdit?'pg-det':'pg-list')};container=document.getElementById('mform-body');container.innerHTML=h;container.scrollTop=0;showPage('pg-form')}
-  else{var el=document.createElement('div');el.className='area';el.innerHTML=h;setMC(el);container=el}
-  container.querySelector('#form-cancel').addEventListener('click',function(){if(mob())showPage(window._isEdit?'pg-det':'pg-list');else{dv='f';setDeskTabs('f')}});
-  container.querySelector('#form-save').addEventListener('click',saveForm);
+  h+='</div>';
+  h+='<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:22px"><button class="btn" id="form-cancel">Annulla</button><button class="btn btn-d" id="form-save">'+(isEdit?'Salva modifiche':'Crea fascicolo')+'</button></div>';
+  modal(h);
+  document.getElementById('form-cancel').addEventListener('click',function(){closeModal();if(mob()&&isEdit)showPage('pg-det');else if(mob())showPage('pg-list')});
+  document.getElementById('form-save').addEventListener('click',saveForm);
+  setTimeout(function(){var cl=document.getElementById('ff-cl');if(cl)cl.focus()},80);
 }
+
 function getFormData(){var fd=window._fd||EC();function v(id){return(document.getElementById(id)||{}).value||''}return Object.assign({},fd,{tipo:v('ff-t'),stato:v('ff-s'),cliente:v('ff-cl'),controparte:v('ff-co'),tribunale:v('ff-tr'),giudice:v('ff-gi'),fase:v('ff-fa'),descrizione:v('ff-de'),driveLink:v('ff-dr'),nr:v('ff-nr'),nrSez:v('ff-nrSez'),nTrib:v('ff-nTrib'),nTribSez:v('ff-nTribSez'),nApp:v('ff-nApp'),nAppSez:v('ff-nAppSez'),nCass:v('ff-nCass'),nCassSez:v('ff-nCassSez'),nSius:v('ff-nSius'),nSiusSez:v('ff-nSiusSez')})}
+
 function saveForm(){
   var fd=getFormData(),isEdit=window._isEdit;if(!fd.cliente.trim()){alert('Inserisci il nome del cliente');return}
-  if(isEdit){fd.aggiornatoIl=tod();persist(cases.map(function(c){return c.id===fd.id?fd:c}));selId=fd.id;ping('Fascicolo aggiornato');if(mob())openMobDet(fd);else{dv='f';setDeskTabs('f')}}
-  else{fd.id=uid();fd.note=[];fd.udienze=[];fd.pagamenti=[];fd.creatoIl=tod();fd.aggiornatoIl=tod();persist([fd].concat(cases));selId=fd.id;ping('Fascicolo creato');if(mob())openMobDet(fd);else{dv='f';setDeskTabs('f')}}
+  closeModal();
+  if(isEdit){fd.aggiornatoIl=tod();persist(cases.map(function(c){return c.id===fd.id?fd:c}));selId=fd.id;ping('Fascicolo aggiornato');if(mob()){openMobDet(cases.find(function(x){return x.id===fd.id})||fd)}else{dv='f';setDeskTabs('f')}}
+  else{fd.id=uid();fd.note=[];fd.udienze=[];fd.pagamenti=[];fd.creatoIl=tod();fd.aggiornatoIl=tod();persist([fd].concat(cases));selId=fd.id;ping('Fascicolo creato');if(mob()){openMobDet(fd)}else{dv='f';setDeskTabs('f')}}
 }
 
 /* === AZIONI SUL CASO === */
