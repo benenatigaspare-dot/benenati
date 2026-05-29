@@ -82,7 +82,7 @@ button,input,select,textarea{font-family:inherit;font-size:14px}
 .sb-new:hover{opacity:.9}
 
 /* MAIN AREA - content scrolls inside here */
-#main{flex:1;overflow:hidden;display:flex;flex-direction:column;min-width:0}
+#main{flex:1;overflow:hidden;display:flex;flex-direction:column;min-width:0}#mc{flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0}
 /* .area is the direct child of #main - it fills and scrolls */
 .area{flex:1;overflow-y:auto;min-height:0;padding:28px 30px}
 .area::-webkit-scrollbar{width:3px}
@@ -269,7 +269,7 @@ textarea.inp{resize:vertical;line-height:1.6}
     </div>
   </div>
   <div id="main">
-    <div id="mc" class="area"></div>
+    <div id="mc"></div>
   </div>
 </div>
 
@@ -565,7 +565,7 @@ function buildDet(c,isMob,container){
   if(!isMob)root.className='area';
 
   if(!c){
-    root.innerHTML='<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:14px;color:var(--ink4);text-align:center;padding:40px"><div style="font-size:44px;opacity:.1">&#128193;</div><p style="font-family:Cormorant Garamond,serif;font-size:20px;color:var(--ink3)">Seleziona un fascicolo dalla lista</p><button class="btn btn-d" onclick="openForm(null)">+ Nuovo fascicolo</button></div>';
+    root.innerHTML='<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:400px;gap:14px;color:var(--ink4);text-align:center;padding:40px"><div style="font-size:44px;opacity:.1">&#128193;</div><p style="font-family:Cormorant Garamond,serif;font-size:20px;color:var(--ink3)">Seleziona un fascicolo dalla lista</p><button class="btn btn-d" onclick="openForm(null)">+ Nuovo fascicolo</button></div>';
     if(!isMob)return root;return;
   }
 
@@ -657,7 +657,8 @@ function buildNotes(c){
   return h+'</div>';
 }
 function addNote(cid){
-  modal('<div class="modal-title">Aggiungi nota</div><div class="g2" style="margin-bottom:14px"><div class="fld"><label>Data</label><input class="inp" type="date" id="mn-d" value="'+tod()+'"></div><div class="fld"><label>Tipo</label><select class="inp" id="mn-t">'+TNOTA.map(function(t){return '<option>'+ec(t)+'</option>'}).join('')+'</select></div></div><div class="fld"><label>Testo</label><textarea class="inp" id="mn-tx" rows="5" placeholder="Aggiornamento del caso..."></textarea></div><div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px"><button class="btn" onclick="closeModal()">Annulla</button><button class="btn btn-d" onclick="saveNote(\''+cid+'\')">Salva</button></div>');
+  window._modalCid=cid;
+  modal('<div class="modal-title">Aggiungi nota</div><div class="g2" style="margin-bottom:14px"><div class="fld"><label>Data</label><input class="inp" type="date" id="mn-d" value="'+tod()+'"></div><div class="fld"><label>Tipo</label><select class="inp" id="mn-t">'+TNOTA.map(function(t){return '<option>'+ec(t)+'</option>'}).join('')+'</select></div></div><div class="fld"><label>Testo</label><textarea class="inp" id="mn-tx" rows="5" placeholder="Aggiornamento del caso..."></textarea></div><div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px"><button class="btn" onclick="closeModal()">Annulla</button><button class="btn btn-d" onclick="saveNote(window._modalCid)">Salva</button></div>');
   setTimeout(function(){var t=document.getElementById('mn-tx');if(t)t.focus()},80);
 }
 function saveNote(cid){
@@ -690,7 +691,10 @@ function buildUd(c){
   });
   return h+'</div>';
 }
-function addUd(cid){modal('<div class="modal-title">Aggiungi udienza</div><div class="g2"><div class="fld"><label>Data *</label><input class="inp" type="date" id="mu-d"></div><div class="fld"><label>Ora</label><input class="inp" type="time" id="mu-o"></div><div class="fld s2"><label>Tipo</label><select class="inp" id="mu-t">'+TUD.map(function(t){return '<option>'+ec(t)+'</option>'}).join('')+'</select></div><div class="fld s2"><label>Note</label><textarea class="inp" id="mu-n" rows="3"></textarea></div></div><div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px"><button class="btn" onclick="closeModal()">Annulla</button><button class="btn btn-d" onclick="saveUd(\''+cid+'\')">Salva</button></div>')}
+function addUd(cid){
+  window._modalCid=cid;
+  modal('<div class="modal-title">Aggiungi udienza</div><div class="g2"><div class="fld"><label>Data *</label><input class="inp" type="date" id="mu-d"></div><div class="fld"><label>Ora</label><input class="inp" type="time" id="mu-o"></div><div class="fld s2"><label>Tipo</label><select class="inp" id="mu-t">'+TUD.map(function(t){return '<option>'+ec(t)+'</option>'}).join('')+'</select></div><div class="fld s2"><label>Note</label><textarea class="inp" id="mu-n" rows="3"></textarea></div></div><div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px"><button class="btn" onclick="closeModal()">Annulla</button><button class="btn btn-d" onclick="saveUd(window._modalCid)">Salva</button></div>');
+}
 function saveUd(cid){
   var data=(document.getElementById('mu-d')||{}).value||'';if(!data){alert('Inserisci una data');return}
   var u={id:uid(),data:data,ora:(document.getElementById('mu-o')||{}).value||'',tipo:(document.getElementById('mu-t')||{}).value||TUD[0],descrizione:(document.getElementById('mu-n')||{}).value||'',esito:'',rinvioAl:''};
@@ -698,8 +702,9 @@ function saveUd(cid){
   closeModal();ping('Udienza aggiunta');refreshTab(cid,'u');
 }
 function editUd(cid,uid2){
+  window._modalCid=cid;window._modalUid=uid2;
   var c=cases.find(function(x){return x.id===cid}),u=c&&c.udienze.find(function(x){return x.id===uid2});if(!u)return;
-  modal('<div class="modal-title">Udienza - '+fmt(u.data)+'</div><div class="fld" style="margin-bottom:12px"><label>Esito</label><textarea class="inp" id="me-e" rows="4">'+ec(u.esito||'')+'</textarea></div><div class="fld" style="margin-bottom:12px"><label>Rinvio al</label><input class="inp" type="date" id="me-r" value="'+ec(u.rinvioAl||'')+'"></div><div id="me-gc" style="margin-bottom:12px"></div><div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn" onclick="closeModal()">Annulla</button><button class="btn btn-d" onclick="saveEsito(\''+cid+'\',\''+uid2+'\')">Salva</button></div>');
+  modal('<div class="modal-title">Udienza - '+fmt(u.data)+'</div><div class="fld" style="margin-bottom:12px"><label>Esito</label><textarea class="inp" id="me-e" rows="4">'+ec(u.esito||'')+'</textarea></div><div class="fld" style="margin-bottom:12px"><label>Rinvio al</label><input class="inp" type="date" id="me-r" value="'+ec(u.rinvioAl||'')+'"></div><div id="me-gc" style="margin-bottom:12px"></div><div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn" onclick="closeModal()">Annulla</button><button class="btn btn-d" onclick="saveEsito(window._modalCid,window._modalUid)">Salva</button></div>');
   setTimeout(function(){
     var e=document.getElementById('me-e');if(e)e.focus();
     var ri=document.getElementById('me-r');if(ri)ri.addEventListener('change',function(){var gc=document.getElementById('me-gc');if(gc&&this.value)gc.innerHTML='<a href="'+gcal(Object.assign({},u,{data:this.value}),c)+'" target="_blank" style="display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--bl);text-decoration:none;padding:5px 10px;background:var(--bl-bg);border-radius:3px">&#128197; Aggiungi rinvio a Google Calendar</a>'});
@@ -729,7 +734,11 @@ function buildPdet(c){
   });
   return h+'</div>';
 }
-function addPag(cid){modal('<div class="modal-title">Aggiungi pagamento</div><div class="g2"><div class="fld"><label>Data</label><input class="inp" type="date" id="mp-d" value="'+tod()+'"></div><div class="fld"><label>Importo (EUR)</label><input class="inp" type="number" id="mp-i" placeholder="0.00" min="0" step="0.01"></div><div class="fld"><label>Tipo</label><select class="inp" id="mp-t">'+TPAG.map(function(t){return '<option>'+ec(t)+'</option>'}).join('')+'</select></div><div class="fld"><label>Stato</label><select class="inp" id="mp-s"><option value="0">Da incassare</option><option value="1">Incassato</option></select></div><div class="fld s2"><label>Descrizione</label><input class="inp" id="mp-n" placeholder="Note..."></div></div><div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px"><button class="btn" onclick="closeModal()">Annulla</button><button class="btn btn-d" onclick="savePag(\''+cid+'\')">Salva</button></div>')}
+function addPag(cid){
+  window._modalCid=cid;
+  modal('<div class="modal-title">Aggiungi pagamento</div><div class="g2"><div class="fld"><label>Data</label><input class="inp" type="date" id="mp-d" value="'+tod()+'"></div><div class="fld"><label>Importo (EUR)</label><input class="inp" type="number" id="mp-i" placeholder="0.00" min="0" step="0.01"></div><div class="fld"><label>Tipo</label><select class="inp" id="mp-t">'+TPAG.map(function(t){return '<option>'+ec(t)+'</option>'}).join('')+'</select></div><div class="fld"><label>Stato</label><select class="inp" id="mp-s"><option value="0">Da incassare</option><option value="1">Incassato</option></select></div><div class="fld s2"><label>Descrizione</label><input class="inp" id="mp-n" placeholder="Note..."></div></div><div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px"><button class="btn" onclick="closeModal()">Annulla</button><button class="btn btn-d" onclick="savePag(window._modalCid)">Salva</button></div>');
+  setTimeout(function(){var el=document.getElementById('mp-i');if(el)el.focus()},80);
+}
 function savePag(cid){
   var imp=Number((document.getElementById('mp-i')||{}).value||0);if(!imp||isNaN(imp)){alert('Importo non valido');return}
   var p={id:uid(),data:(document.getElementById('mp-d')||{}).value||tod(),importo:imp,tipo:(document.getElementById('mp-t')||{}).value||TPAG[0],incassato:(document.getElementById('mp-s')||{}).value==='1',descrizione:(document.getElementById('mp-n')||{}).value||''};
@@ -797,7 +806,7 @@ function buildCalHTML(){
 }
 function renderCal(){
   // Desktop
-  if(!isMob()&&dv==='c'){var mc=document.getElementById('mc');if(mc){var el=document.createElement('div');el.className='cw area';el.innerHTML=buildCalHTML();setMC(el)}}
+  if(!isMob()&&dv==='c'){var mc=document.getElementById('mc');if(mc){var el=document.createElement('div');el.className='cw';el.innerHTML=buildCalHTML();setMC(el)}}
   // Mobile
   var mb=document.getElementById('pg-cal-body');if(mb)mb.innerHTML=buildCalHTML();
 }
