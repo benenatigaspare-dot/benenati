@@ -641,9 +641,20 @@ function showTab(t,cid){
 }
 function refreshTab(cid,t){
   var c=cases.find(function(x){return x.id===cid});if(!c)return;
+  // Update tab counts
   var tn=document.getElementById('tb-n'),tu=document.getElementById('tb-u'),tp=document.getElementById('tb-p');
-  if(tn)tn.innerHTML='Note ('+c.note.length+')';if(tu)tu.innerHTML='Udienze ('+c.udienze.length+')';if(tp)tp.innerHTML='Pagamenti ('+(c.pagamenti||[]).length+')';
-  if(isMob())refreshMobDet(cid);else showTab(t||curTab,cid);
+  if(tn)tn.setAttribute('data-a','showTab'),tn.innerHTML='Note ('+c.note.length+')';
+  if(tu)tu.setAttribute('data-a','showTab'),tu.innerHTML='Udienze ('+c.udienze.length+')';
+  if(tp)tp.setAttribute('data-a','showTab'),tp.innerHTML='Pagamenti ('+(c.pagamenti||[]).length+')';
+  // Re-render current tab content only (no full page rebuild)
+  var tab=t||curTab;
+  var body=document.getElementById('tab-content');
+  if(body){
+    if(tab==='n')body.innerHTML=buildNotes(c);
+    else if(tab==='u')body.innerHTML=buildUd(c);
+    else body.innerHTML=buildPdet(c);
+  }
+  if(!isMob())renderSbList();
 }
 
 /* === NOTES === */
@@ -866,7 +877,27 @@ function saveForm(){
 function cancelForm(){if(isMob())mobGo(window._isEdit?'pg-det':'pg-list');else{dv='f';setDeskTabs('f')}}
 
 /* === CASE ACTIONS === */
-function setFase(cid,f){persist(cases.map(function(c){return c.id===cid?Object.assign({},c,{fase:c.fase===f?'':f,aggiornatoIl:tod()}):c}));refreshMobDet(cid)}
+function setFase(cid,f){
+  persist(cases.map(function(c){return c.id===cid?Object.assign({},c,{fase:c.fase===f?'':f,aggiornatoIl:tod()}):c}));
+  // Rebuild only the fase strip, not the entire page
+  var c2=cases.find(function(x){return x.id===cid});if(!c2)return;
+  var ai=FASI.indexOf(c2.fase||'');
+  var strip=document.querySelector('.fstrip');
+  if(strip){
+    strip.innerHTML='';
+    FASI.forEach(function(f2,i){
+      var d=document.createElement('div');
+      d.className='fst'+(f2===c2.fase?' ac':ai>-1&&i<ai?' dn':'');
+      d.textContent=f2;
+      d.setAttribute('data-a','setFase');
+      d.setAttribute('data-c',cid);
+      d.setAttribute('data-v',f2);
+      d.setAttribute('onclick','_act(this)');
+      strip.appendChild(d);
+    });
+  }
+  if(!isMob())renderDesk();
+}
 function editCase(cid){openForm(cid)}
 function delCase(cid){
   if(!confirm('Eliminare questo fascicolo?'))return;
