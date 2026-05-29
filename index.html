@@ -384,7 +384,7 @@ function renderAll(){
   var cnt=cases.length,at=cases.filter(function(c){return c.stato==='attivo'}).length;
   var st=document.getElementById('sbstat');if(st)st.textContent=cnt+' fascicoli - '+at+' attivi';
   renderSbList();renderMobList();
-  if(dv==='f')renderDesk();else if(dv==='p')renderPagDesk();
+  if(!mob()){if(dv==='f')renderDesk();else if(dv==='p')renderPagDesk();}
 }
 
 /* SIDEBAR LIST */
@@ -425,9 +425,9 @@ function setDeskTabs(v){
   dv=v;['f','c','p'].forEach(function(x){var b=document.getElementById('sbt-'+x);if(b)b.className='sbt'+(v===x?' on':'')});
   if(v==='c')renderCal();else if(v==='p')renderPagDesk();else renderDesk();
 }
-function setMC(el){var mc=document.getElementById('mc');if(!mc)return;mc.innerHTML='';if(el)mc.appendChild(el)}
+function setMC(el){if(mob())return;var mc=document.getElementById('mc');if(!mc)return;mc.innerHTML='';if(el)mc.appendChild(el)}
 function renderDesk(){
-  if(dv!=='f')return;
+  if(mob()||dv!=='f')return;
   var c=cases.find(function(x){return x.id===selId});
   var el=document.createElement('div');el.className='area';
   el.innerHTML=buildDetHTML(c);
