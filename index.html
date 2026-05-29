@@ -624,7 +624,7 @@ function buildDet(c,isMob,container){
   h+='<div id="tab-content"></div>';
 
   root.innerHTML=h;
-  setTimeout(function(){showTab('n',c.id)},0);
+  showTab('n',c.id);
   if(!isMob)return root;
 }
 
